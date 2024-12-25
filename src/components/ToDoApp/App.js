@@ -8,25 +8,29 @@ export default function App() {
 			id: 1,
 			description: 'Completed task',
 			created: 'created 17 seconds ago',
+			status: 'completed',
 		},
-		{ id: 2, 
-      description: 'Editing task', 
-      created: 'created 30 seconds ago', 
-     },
+		{
+			id: 2,
+			description: 'Editing task',
+			created: 'created 5 minutes ago',
+			status: 'editing',
+		},
 		{
 			id: 3,
 			description: 'Active task',
 			created: 'created 5 minutes ago',
+			status: null,
 		},
 	]
 
 	return (
-		<section className='todoapp'>
+		<>
 			<Header />
 			<section className='main'>
 				<TaskList todos={todosData} />
-        <Footer />
+				<Footer />
 			</section>
-		</section>
+		</>
 	)
 }
