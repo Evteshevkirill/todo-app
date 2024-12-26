@@ -1,4 +1,4 @@
-export default function Task({description, created, status}) {
+export default function Task({description, created}) {
     return (
 			<>
 				<div className='view'>

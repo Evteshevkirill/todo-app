@@ -1,4 +1,4 @@
-import Header from '../NewTaskForm/Header'
+import NewTaskForm from '../NewTaskForm/NewTaskForm'
 import TaskList from '../TaskList/TaskList'
 import Footer from '../Footer/Footer'
 
@@ -26,7 +26,7 @@ export default function App() {
 
 	return (
 		<>
-			<Header />
+			<NewTaskForm />
 			<section className='main'>
 				<TaskList todos={todosData} />
 				<Footer />
