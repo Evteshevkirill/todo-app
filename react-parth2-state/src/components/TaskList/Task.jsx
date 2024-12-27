@@ -1,19 +1,28 @@
 import {Component} from 'react'
 
-export default class Task extends Component  {
+export default class Task extends Component {
+	state = {
+		done: false,
+	}
 
-  onClickTask = () => {
-    console.log(`Del: ${this.props.label}`);
-  }
+	completedTask = () => {
+		this.setState(({ done }) => {
+			return {
+				done: !done,
+			}
+		})
+	}
 
-  render(){
-    const { description, created, id, status } = this.props
 
-    return (
-			<li 
-      key={id} 
-      className={status}
-      onClick={this.onClickTask}>
+	render() {
+		const { description, created, onDeleted, id } = this.props
+		const { done } = this.state
+
+		let classNames = ''
+		if (done) classNames = 'completed'
+
+		return (
+			<li className={classNames} onClick={this.completedTask}>
 				<div className='view'>
 					<input className='toggle' type='checkbox' />
 					<label>
@@ -21,14 +30,14 @@ export default class Task extends Component  {
 						<span className='created'>{created}</span>
 					</label>
 					<button className='icon icon-edit'></button>
-					<button 
-          className='icon icon-destroy'
-          >
-          </button>
+					<button
+						className='icon icon-destroy'
+						onClick={() => onDeleted(id)}
+					></button>
 				</div>
 				<input type='text' className='edit' value='Editing task'></input>
 			</li>
 		)
-  }
+	}
 }
 
