@@ -3,7 +3,8 @@ import Task from './Task'
 
 export default class TaskList extends Component {
 	render() {
-		const { todos, onDeleted, onToggleDone } = this.props
+		const { todos, onDeleted, onToggleDone, onEditTask, changeTask } =
+			this.props
 		const elements = todos.map(item => {
 			const { id } = item
 			return (
@@ -11,7 +12,9 @@ export default class TaskList extends Component {
 					key={id}
 					{...item}
 					onDeleted={event => onDeleted(id, event)}
-					onToggleDone={() => onToggleDone(id)}
+					onToggleDone={event => onToggleDone(id, event)}
+					onEditTask={event => onEditTask(id, event)}
+					changeTask={event => changeTask(id, event, event.target.value)}
 				/>
 			)
 		})

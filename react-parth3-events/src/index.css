@@ -338,6 +338,7 @@ body {
 
 .filters li button:not(.selected) {
 	cursor: pointer;
+	outline: none;
 }
 
 .filters li:hover button {
@@ -346,6 +347,7 @@ body {
 
 .filters li button.selected {
 	border-color: rgba(175, 47, 47, 0.2);
+	outline: none;
 }
 
 .clear-completed,
