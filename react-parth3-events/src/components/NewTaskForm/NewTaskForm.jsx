@@ -1,8 +1,8 @@
-import {Component} from 'react'
+import { Component } from 'react'
 
-export default class NewTaskForm extends Component{
-  render(){
-    const placeholder = 'What needs to be done?'
+export default class NewTaskForm extends Component {
+	render() {
+		const placeholder = 'What needs to be done?'
 		return (
 			<header className='header'>
 				<h1>todos</h1>
@@ -14,5 +14,5 @@ export default class NewTaskForm extends Component{
 				/>
 			</header>
 		)
-  }
+	}
 }
