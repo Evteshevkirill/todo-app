@@ -17,11 +17,8 @@ export default class App extends Component {
 	}
 
 	state = {
-		todosData: [
-			this.createToDoTask('Drink Coffee'),
-			this.createToDoTask('React app'),
-			this.createToDoTask('Have a lunch'),
-		],
+		todosData: [],
+		filter: 'all',
 	}
 
 	onToggleData = (id, arr, propName) => {
@@ -54,6 +51,30 @@ export default class App extends Component {
 		})
 	}
 
+	onFilterTasks(items, filter) {
+		return items.filter(item => {
+			if (filter === 'all') {
+				return items
+			} else if (filter === 'active') {
+				return !item.done
+			} else if (filter === 'completed') {
+				return item.done
+			}
+		})
+	}
+
+	onFilterChange = filter => {
+		this.setState({ filter })
+	}
+
+	onClearTasks = () => {
+		this.setState(({ todosData }) => {
+			return {
+				todosData: [],
+			}
+		})
+	}
+
 	changeTask = (id, event, value) => {
 		if (event.key === 'Enter') {
 			this.setState(({ todosData }) => {
@@ -66,20 +87,6 @@ export default class App extends Component {
 				}
 			})
 			this.onEditTask(id, event)
-		}
-	}
-
-	onFilterTasks = filter => {
-		const { todosData } = this.state
-		switch (filter) {
-			case 'All':
-				return todosData.filter(el => el)
-			case 'Completed':
-				return todosData.filter(el => el.done)
-			case 'Active':
-				return todosData.filter(el => !el.done)
-			default:
-				return todosData.filter(el => el)
 		}
 	}
 
@@ -106,7 +113,9 @@ export default class App extends Component {
 	}
 
 	render() {
-		const { todosData } = this.state
+		const { todosData, filter } = this.state
+
+		const visibleItems = this.onFilterTasks(todosData, filter)
 		const doneCount = todosData.filter(el => el.done).length
 		const todoCount = todosData.length - doneCount
 		return (
@@ -114,13 +123,19 @@ export default class App extends Component {
 				<NewTaskForm newTask={this.newTask} todos={todosData} />
 				<section className='main'>
 					<TaskList
-						todos={todosData}
+						todos={visibleItems}
 						onDeleted={this.deleteTask}
 						onToggleDone={this.onToggleDone}
 						onEditTask={this.onEditTask}
 						changeTask={this.changeTask}
 					/>
-					<Footer todoCount={todoCount} todos={todosData} />
+					<Footer
+						todoCount={todoCount}
+						todosData={todosData}
+						filter={this.state.filter}
+						onFilterChange={this.onFilterChange}
+						onClearTasks={this.onClearTasks}
+					/>
 				</section>
 			</>
 		)
