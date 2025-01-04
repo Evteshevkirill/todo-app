@@ -10,11 +10,12 @@ export default class TaskList extends Component {
 			return (
 				<Task
 					key={id}
-					{...item}
-					onDeleted={event => onDeleted(id, event)}
-					onToggleDone={event => onToggleDone(id, event)}
-					onEditTask={event => onEditTask(id, event)}
-					changeTask={event => changeTask(id, event, event.target.value)}
+					item={item}
+					onDeleted={onDeleted}
+					onToggleDone={onToggleDone}
+					onEditTask={onEditTask}
+					changeTask={changeTask}
+					description={item.description}
 				/>
 			)
 		})

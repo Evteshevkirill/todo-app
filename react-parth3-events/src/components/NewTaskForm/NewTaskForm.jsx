@@ -13,7 +13,8 @@ export default class NewTaskForm extends Component {
 
 	onSubmit = event => {
 		if (event.key === 'Enter') {
-			this.props.newTask(event.target.value, event)
+			event.preventDefault()
+			this.props.newTask(event.target.value)
 			this.setState({
 				value: '',
 			})
@@ -22,7 +23,7 @@ export default class NewTaskForm extends Component {
 	render() {
 		const placeholder = 'What needs to be done?'
 		return (
-			<header className='header'>
+			<form className='header' onKeyDown={this.onSubmit}>
 				<h1>todos</h1>
 				<input
 					type='text'
@@ -31,9 +32,8 @@ export default class NewTaskForm extends Component {
 					autoFocus
 					onChange={this.onTaskChange}
 					value={this.state.value}
-					onKeyDown={event => this.onSubmit(event)}
 				/>
-			</header>
+			</form>
 		)
 	}
 }

@@ -13,6 +13,7 @@ export default class App extends Component {
 			created: 'created 5 minutes ago',
 			done: false,
 			edit: false,
+			checked: false,
 		}
 	}
 
@@ -21,10 +22,14 @@ export default class App extends Component {
 		filter: 'all',
 	}
 
-	onToggleData = (id, arr, propName) => {
+	onToggleData = (id, arr, propName, ...rest) => {
 		const idx = arr.findIndex(el => el.id === id)
 		const oldItem = arr[idx]
-		const newItem = { ...oldItem, [propName]: !oldItem[propName] }
+		const newItem = {
+			...oldItem,
+			[propName]: !oldItem[propName],
+			[rest]: !oldItem[rest],
+		}
 		const newTodoData = arr.toSpliced(idx, 1, newItem)
 		return newTodoData
 	}
@@ -37,7 +42,7 @@ export default class App extends Component {
 		}
 		this.setState(({ todosData }) => {
 			return {
-				todosData: this.onToggleData(id, todosData, 'done'),
+				todosData: this.onToggleData(id, todosData, 'done', 'checked'),
 			}
 		})
 	}
