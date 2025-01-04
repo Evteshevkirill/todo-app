@@ -69,8 +69,9 @@ export default class App extends Component {
 
 	onClearTasks = () => {
 		this.setState(({ todosData }) => {
+			const newData = todosData.filter(el => !el.done)
 			return {
-				todosData: [],
+				todosData: newData,
 			}
 		})
 	}
