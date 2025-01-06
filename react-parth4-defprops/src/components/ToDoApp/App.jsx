@@ -2,22 +2,25 @@ import { Component } from 'react'
 import NewTaskForm from '../NewTaskForm/NewTaskForm'
 import TaskList from '../TaskList/TaskList'
 import Footer from '../Footer/Footer'
+import './App.css'
 
 export default class App extends Component {
+	constructor() {
+		super()
+		this.state = {
+			todosData: [],
+			filter: 'All',
+		}
+	}
 	createToDoTask = value => {
 		return {
 			id: this.state.todosData.length + 1,
 			description: value,
-			created: 'created 5 minutes ago',
+			created: new Date().toString(),
 			done: false,
 			edit: false,
 			checked: false,
 		}
-	}
-
-	state = {
-		todosData: [],
-		filter: 'All',
 	}
 
 	onToggleData = (id, arr, propName, ...rest) => {
@@ -54,7 +57,7 @@ export default class App extends Component {
 		})
 	}
 
-	onFilterTasks(items, filter) {
+	FilterTasks(items, filter) {
 		return items.filter(item => {
 			if (filter === 'Active') {
 				return !item.done
@@ -70,7 +73,7 @@ export default class App extends Component {
 		this.setState({ filter })
 	}
 
-	onClearTasks = () => {
+	ClearCompletedTasks = () => {
 		this.setState(({ todosData }) => {
 			const newData = todosData.filter(el => !el.done)
 			return {
@@ -106,7 +109,7 @@ export default class App extends Component {
 		})
 	}
 
-	deleteTask = (id, event) => {
+	deletedTask = (id, event) => {
 		event.stopPropagation()
 		this.setState(({ todosData }) => {
 			const idx = todosData.findIndex(task => id === task.id)
@@ -127,8 +130,8 @@ export default class App extends Component {
 				<NewTaskForm newTask={this.newTask} />
 				<section className='main'>
 					<TaskList
-						todos={this.onFilterTasks(todosData, filter)}
-						onDeleted={this.deleteTask}
+						todos={this.FilterTasks(todosData, filter)}
+						deletedTask={this.deletedTask}
 						onToggleDone={this.onToggleDone}
 						onEditTask={this.onEditTask}
 						changeTask={this.changeTask}
@@ -137,7 +140,7 @@ export default class App extends Component {
 						todoCount={todoCount}
 						filter={filter}
 						onFilterChange={this.onFilterChange}
-						onClearTasks={this.onClearTasks}
+						ClearCompletedTasks={this.ClearCompletedTasks}
 					/>
 				</section>
 			</>

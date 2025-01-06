@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
+import { formatDistanceToNowStrict } from 'date-fns'
 export default class Task extends Component {
 	state = {
 		inputValue: '',
@@ -12,7 +13,8 @@ export default class Task extends Component {
 		})
 	}
 	render() {
-		const { todo, onDeleted, onToggleDone, changeTask, onEditTask } = this.props
+		const { todo, deletedTask, onToggleDone, changeTask, onEditTask } =
+			this.props
 		const { id, description, created, checked, done, edit } = todo
 
 		let classNames = ''
@@ -34,7 +36,13 @@ export default class Task extends Component {
 					/>
 					<label>
 						<span className='description'>{description}</span>
-						<span className='created'>{created}</span>
+						<span className='created'>{`created ${formatDistanceToNowStrict(
+							created,
+							{
+								includeSeconds: true,
+								addSuffix: true,
+							}
+						)}`}</span>
 					</label>
 					<button
 						className='icon icon-edit'
@@ -42,7 +50,7 @@ export default class Task extends Component {
 					></button>
 					<button
 						className='icon icon-destroy'
-						onClick={event => onDeleted(id, event)}
+						onClick={event => deletedTask(id, event)}
 					></button>
 				</div>
 				<input
@@ -62,8 +70,16 @@ Task.defaultProps = {
 }
 
 Task.propTypes = {
+	todo: PropTypes.shape({
+		id: PropTypes.number,
+		description: PropTypes.string,
+		checked: PropTypes.bool,
+		done: PropTypes.bool,
+		edit: PropTypes.bool,
+		created: PropTypes.instanceOf(Date),
+	}),
 	onToggleDone: PropTypes.func.isRequired,
 	onEditTask: PropTypes.func.isRequired,
 	changeTask: PropTypes.func.isRequired,
-	onDeleted: PropTypes.func.isRequired,
+	deletedTask: PropTypes.func.isRequired,
 }

@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import PropTypes from 'prop-types'
 
 export default class NewTaskForm extends Component {
 	state = {
@@ -23,7 +24,7 @@ export default class NewTaskForm extends Component {
 	render() {
 		const placeholder = 'What needs to be done?'
 		return (
-			<form className='header' onKeyDown={this.onSubmit}>
+			<header className='header' onKeyDown={this.onSubmit}>
 				<h1>todos</h1>
 				<input
 					type='text'
@@ -33,11 +34,11 @@ export default class NewTaskForm extends Component {
 					onChange={this.onTaskChange}
 					value={this.state.value}
 				/>
-			</form>
+			</header>
 		)
 	}
 }
 
-NewTaskForm.defaultProps = {
-	newTask: () => {},
+NewTaskForm.propTypes = {
+	newTask: PropTypes.func.isRequired,
 }

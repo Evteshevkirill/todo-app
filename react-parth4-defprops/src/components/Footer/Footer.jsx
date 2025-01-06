@@ -4,14 +4,18 @@ import TaskFilter from './TasksFilter'
 
 export default class Footer extends Component {
 	render() {
-		const { todoCount, filter, onFilterChange, onClearTasks } = this.props
+		const { todoCount, filter, onFilterChange, ClearCompletedTasks } =
+			this.props
 		return (
 			<footer className='footer'>
 				<span className='todo-count'>{todoCount} items left</span>
 				<ul className='filters'>
 					<TaskFilter filter={filter} onFilterChange={onFilterChange} />
 				</ul>
-				<button className='clear-completed' onClick={() => onClearTasks()}>
+				<button
+					className='clear-completed'
+					onClick={() => ClearCompletedTasks()}
+				>
 					Clear completed
 				</button>
 			</footer>
@@ -25,5 +29,5 @@ Footer.defaultProps = {
 
 Footer.propTypes = {
 	todoCount: PropTypes.number,
-	onClearTasks: PropTypes.func.isRequired,
+	ClearCompletedTasks: PropTypes.func.isRequired,
 }
