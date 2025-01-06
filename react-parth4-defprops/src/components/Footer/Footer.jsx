@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import PropTypes from 'prop-types'
 import TaskFilter from './TasksFilter'
 
 export default class Footer extends Component {
@@ -16,4 +17,13 @@ export default class Footer extends Component {
 			</footer>
 		)
 	}
+}
+
+Footer.defaultProps = {
+	todoCount: 0,
+}
+
+Footer.propTypes = {
+	todoCount: PropTypes.number,
+	onClearTasks: PropTypes.func.isRequired,
 }

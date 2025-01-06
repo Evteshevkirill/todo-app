@@ -1,4 +1,5 @@
 import { Component } from 'react'
+
 import NewTaskForm from '../NewTaskForm/NewTaskForm'
 import TaskList from '../TaskList/TaskList'
 import Footer from '../Footer/Footer'

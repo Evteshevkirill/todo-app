@@ -1,10 +1,10 @@
 import { Component } from 'react'
-
+import PropTypes from 'prop-types'
 export default class TaskFilter extends Component {
 	buttons = [
-		{ name: 'all', label: 'All' },
-		{ name: 'active', label: 'Active' },
-		{ name: 'completed', label: 'Completed' },
+		{ name: 'All', label: 'All' },
+		{ name: 'Active', label: 'Active' },
+		{ name: 'Completed', label: 'Completed' },
 	]
 
 	render() {
@@ -22,4 +22,13 @@ export default class TaskFilter extends Component {
 		})
 		return <>{buttons}</>
 	}
+}
+
+TaskFilter.defaultProps = {
+	filter: 'All',
+}
+
+TaskFilter.propTypes = {
+	filter: PropTypes.string,
+	onFilterChange: PropTypes.func.isRequired,
 }

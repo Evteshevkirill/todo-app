@@ -4,11 +4,9 @@ import TaskList from '../TaskList/TaskList'
 import Footer from '../Footer/Footer'
 
 export default class App extends Component {
-	maxId = 100
-
 	createToDoTask = value => {
 		return {
-			id: this.maxId++,
+			id: this.state.todosData.length + 1,
 			description: value,
 			created: 'created 5 minutes ago',
 			done: false,
@@ -19,7 +17,7 @@ export default class App extends Component {
 
 	state = {
 		todosData: [],
-		filter: 'all',
+		filter: 'All',
 	}
 
 	onToggleData = (id, arr, propName, ...rest) => {
@@ -58,12 +56,12 @@ export default class App extends Component {
 
 	onFilterTasks(items, filter) {
 		return items.filter(item => {
-			if (filter === 'all') {
-				return items
-			} else if (filter === 'active') {
+			if (filter === 'Active') {
 				return !item.done
-			} else if (filter === 'completed') {
+			} else if (filter === 'Completed') {
 				return item.done
+			} else {
+				return items
 			}
 		})
 	}
@@ -81,13 +79,14 @@ export default class App extends Component {
 		})
 	}
 
-	changeTask = (id, event, value) => {
+	changeTask = (id, event) => {
 		if (event.key === 'Enter') {
 			this.setState(({ todosData }) => {
 				const idx = todosData.findIndex(el => el.id === id)
 				const oldItem = todosData[idx]
-				const newItem = { ...oldItem, description: value }
+				const newItem = { ...oldItem, description: event.target.value }
 				const newTodoData = todosData.toSpliced(idx, 1, newItem)
+
 				return {
 					todosData: newTodoData,
 				}
@@ -121,15 +120,14 @@ export default class App extends Component {
 	render() {
 		const { todosData, filter } = this.state
 
-		const visibleItems = this.onFilterTasks(todosData, filter)
 		const doneCount = todosData.filter(el => el.done).length
 		const todoCount = todosData.length - doneCount
 		return (
 			<>
-				<NewTaskForm newTask={this.newTask} todos={todosData} />
+				<NewTaskForm newTask={this.newTask} />
 				<section className='main'>
 					<TaskList
-						todos={visibleItems}
+						todos={this.onFilterTasks(todosData, filter)}
 						onDeleted={this.deleteTask}
 						onToggleDone={this.onToggleDone}
 						onEditTask={this.onEditTask}
@@ -137,8 +135,7 @@ export default class App extends Component {
 					/>
 					<Footer
 						todoCount={todoCount}
-						todosData={todosData}
-						filter={this.state.filter}
+						filter={filter}
 						onFilterChange={this.onFilterChange}
 						onClearTasks={this.onClearTasks}
 					/>
