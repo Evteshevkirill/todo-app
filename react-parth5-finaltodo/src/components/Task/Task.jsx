@@ -5,8 +5,8 @@ import { formatDistanceToNowStrict } from 'date-fns'
 
 export default class Task extends Component {
   constructor(props) {
+    super(props)
     const { description } = props
-    super()
     this.state = {
       inputValue: '',
       editValue: description,
