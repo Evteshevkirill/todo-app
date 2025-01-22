@@ -11,7 +11,7 @@ export default function Footer(props) {
         <TaskFilter filter={filter} onFilterChange={onFilterChange} />
       </ul>
       <button type="button" className="clear-completed" onClick={() => ClearCompletedTasks()}>
-        Clear completed
+        Clear completed tasks
       </button>
     </footer>
   )
