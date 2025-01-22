@@ -17,7 +17,7 @@ export default class NewTaskForm extends Component {
 
   onSubmit = (event) => {
     const { newTask } = this.props
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && event.target.value.length !== 0) {
       event.preventDefault()
       newTask(event.target.value)
       this.setState({
