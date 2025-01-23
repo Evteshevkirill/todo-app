@@ -1,14 +1,13 @@
-/* eslint-disable react/no-unused-state */
 import { Component } from 'react'
 import PropTypes from 'prop-types'
 import { formatDistanceToNowStrict } from 'date-fns'
 
 export default class Task extends Component {
   constructor(props) {
-    const { description } = props
-    super()
+    super(props)
+    const { todo } = props
+    const { description } = todo
     this.state = {
-      inputValue: '',
       editValue: description,
     }
   }
@@ -20,8 +19,8 @@ export default class Task extends Component {
   }
 
   render() {
-    const { todo, description, deletedTask, onToggleDone, changeTask, onEditTask } = this.props
-    const { id, created, checked, done, edit } = todo
+    const { todo, deletedTask, onToggleDone, changeTask, onEditTask } = this.props
+    const { id, created, description, checked, done, edit, timeMin, timeSec } = todo
     const { editValue } = this.state
 
     let classNames = ''
@@ -45,8 +44,13 @@ export default class Task extends Component {
             onKeyDown={(event) => onToggleDone(id, event)}
           />
           <label htmlFor={id}>
-            <span className="description">{description}</span>
-            <span className="created">{`created ${formatDistanceToNowStrict(created, {
+            <span className="title">{description}</span>
+            <span className="description">
+              <button type="button" className="icon icon-play" aria-label="play timer" />
+              <button type="button" className="icon icon-pause" aria-label="pause timer" />
+              {timeMin}:{timeSec}
+            </span>
+            <span className="description">{`created ${formatDistanceToNowStrict(created, {
               includeSeconds: true,
               addSuffix: true,
             })}`}</span>
@@ -84,6 +88,8 @@ Task.propTypes = {
   todo: PropTypes.shape({
     id: PropTypes.number,
     description: PropTypes.string,
+    min: PropTypes.string,
+    sec: PropTypes.string,
     checked: PropTypes.bool,
     done: PropTypes.bool,
     edit: PropTypes.bool,

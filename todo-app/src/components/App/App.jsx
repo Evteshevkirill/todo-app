@@ -40,11 +40,13 @@ export default class App extends Component {
     this.filterTasks = filterTasks.bind(this)
   }
 
-  createToDoTask = (value) => {
+  createToDoTask = (value, min, sec) => {
     const { todosData } = this.state
     return {
       id: todosData.length + 1,
       description: value,
+      timeMin: min,
+      timeSec: sec,
       created: new Date().toString(),
       done: false,
       edit: false,
@@ -104,10 +106,10 @@ export default class App extends Component {
     }
   }
 
-  newTask = (value) => {
+  newTask = (value, min, sec) => {
     this.setState(({ todosData }) => {
       const newTodoData = [...todosData]
-      const newTask = this.createToDoTask(value)
+      const newTask = this.createToDoTask(value, min, sec)
       newTodoData.unshift(newTask)
       return {
         todosData: newTodoData,

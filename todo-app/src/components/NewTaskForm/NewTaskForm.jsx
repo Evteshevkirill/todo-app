@@ -6,10 +6,24 @@ export default class NewTaskForm extends Component {
     super()
     this.state = {
       value: '',
+      min: '',
+      sec: '',
     }
   }
 
-  onTaskChange = (event) => {
+  onTaskMin = (event) => {
+    this.setState({
+      min: event.target.value,
+    })
+  }
+
+  onTaskSec = (event) => {
+    this.setState({
+      sec: event.target.value,
+    })
+  }
+
+  onTaskValue = (event) => {
     this.setState({
       value: event.target.value,
     })
@@ -17,29 +31,30 @@ export default class NewTaskForm extends Component {
 
   onSubmit = (event) => {
     const { newTask } = this.props
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      newTask(event.target.value)
-      this.setState({
-        value: '',
-      })
-    }
+    const { value, sec, min } = this.state
+
+    if (value === '' || sec === '' || min === '') return
+
+    event.preventDefault()
+    newTask(value, min, sec)
+    this.setState({
+      value: '',
+      min: '',
+      sec: '',
+    })
   }
 
   render() {
-    const placeholder = 'What needs to be done?'
-    const { value } = this.state
+    const { value, min, sec } = this.state
     return (
       <header className="header">
         <h1>todos</h1>
-        <input
-          type="text"
-          className="new-todo"
-          placeholder={placeholder}
-          onChange={this.onTaskChange}
-          onKeyDown={this.onSubmit}
-          value={value}
-        />
+        <form className="new-todo-form" onSubmit={this.onSubmit}>
+          <input type="text" className="new-todo" placeholder="Task" onChange={this.onTaskValue} value={value} />
+          <input type="text" className="new-todo-form__timer" placeholder="Min" onChange={this.onTaskMin} value={min} />
+          <input type="text" className="new-todo-form__timer" placeholder="Sec" onChange={this.onTaskSec} value={sec} />
+          <button disabled={!value || !min || !sec} type="submit" aria-label="submit form" />
+        </form>
       </header>
     )
   }
