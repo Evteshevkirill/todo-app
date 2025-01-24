@@ -91,6 +91,9 @@ export default class App extends Component {
   }
 
   changeTask = (id, event) => {
+    if (event.keyCode === 27) {
+      this.onEditTask(id, event)
+    }
     if (event.key === 'Enter') {
       this.setState(({ todosData }) => {
         const idx = todosData.findIndex((el) => el.id === id)

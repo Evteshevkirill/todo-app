@@ -32,10 +32,11 @@ export default class NewTaskForm extends Component {
   onSubmit = (event) => {
     const { newTask } = this.props
     const { value, sec, min } = this.state
+    event.preventDefault()
 
     if (value === '' || sec === '' || min === '') return
+    if (Number.isNaN(+sec) || Number.isNaN(+min)) return
 
-    event.preventDefault()
     newTask(value, min, sec)
     this.setState({
       value: '',

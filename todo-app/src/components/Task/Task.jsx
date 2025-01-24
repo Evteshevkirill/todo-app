@@ -5,8 +5,7 @@ import { formatDistanceToNowStrict } from 'date-fns'
 export default class Task extends Component {
   constructor(props) {
     super(props)
-    const { todo } = props
-    const { description } = todo
+    const { description } = props
     this.state = {
       editValue: description,
     }
@@ -37,9 +36,9 @@ export default class Task extends Component {
             id={id}
             className="toggle"
             type="checkbox"
-            onChange={this.onTaskEditing}
             value={editValue}
             checked={checked}
+            onChange={this.onTaskEditing}
             onClick={(event) => onToggleDone(id, event)}
             onKeyDown={(event) => onToggleDone(id, event)}
           />
