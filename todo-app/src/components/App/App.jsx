@@ -45,8 +45,8 @@ export default class App extends Component {
     return {
       id: todosData.length + 1,
       description: value,
-      timeMin: min,
-      timeSec: sec,
+      timeMin: +min,
+      timeSec: +sec,
       created: new Date().toString(),
       done: false,
       edit: false,
