@@ -2,6 +2,8 @@ import { Component } from 'react'
 import PropTypes from 'prop-types'
 import { formatDistanceToNowStrict } from 'date-fns'
 
+import Timer from '../Timer/Timer'
+
 export default class Task extends Component {
   constructor(props) {
     super(props)
@@ -45,9 +47,7 @@ export default class Task extends Component {
           <label htmlFor={id}>
             <span className="title">{description}</span>
             <span className="description">
-              <button type="button" className="icon icon-play" aria-label="play timer" />
-              <button type="button" className="icon icon-pause" aria-label="pause timer" />
-              {timeMin}:{timeSec}
+              <Timer timeMin={timeMin} timeSec={timeSec} />
             </span>
             <span className="description">{`created ${formatDistanceToNowStrict(created, {
               includeSeconds: true,
