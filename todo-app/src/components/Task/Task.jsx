@@ -2,90 +2,16 @@ import { Component } from 'react'
 import PropTypes from 'prop-types'
 import { formatDistanceToNowStrict } from 'date-fns'
 
-function formatTime(time) {
-  const min = Math.floor(time / 60)
-  const sec = time % 60
-  return `${min}:${sec < 10 ? '0' : ''}${sec}`
-}
+import Timer from '../Timer/Timer'
 
 export default class Task extends Component {
   constructor(props) {
     super(props)
-    const { todo } = props
-
-    const { id, description, timeMin, timeSec } = todo
-
-    const savedTime = sessionStorage.getItem(`${id}`)
-    const initialTime = savedTime ? parseInt(savedTime, 10) : timeMin * 60 + timeSec
+    const { description } = props
 
     this.state = {
-      id,
       editValue: description,
-      time: initialTime,
-      isRunning: sessionStorage.getItem(`${id}-isRunning`) === 'true',
-      intervalId: null,
     }
-    this.formatTime = formatTime.bind(this)
-  }
-
-  componentDidMount() {
-    const { id } = this.state
-
-    const savedTime = sessionStorage.getItem(`${id}`)
-    const isRunning = sessionStorage.getItem(`${id}-isRunning`) === 'true'
-
-    if (savedTime) {
-      this.setState({ time: parseInt(savedTime, 10), isRunning })
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { time, id, isRunning } = this.state
-    if (prevState.time !== time) {
-      sessionStorage.setItem(`${id}`, time)
-    }
-    if (prevState.isRunning !== isRunning) {
-      sessionStorage.setItem(`${id}-isRunning`, isRunning)
-    }
-  }
-
-  componentWillUnmount() {
-    const { isRunning, id, time, intervalId } = this.state
-
-    sessionStorage.setItem(`${id}`, time)
-    sessionStorage.setItem(`${id}-isRunning`, isRunning)
-
-    if (isRunning) {
-      clearInterval(intervalId)
-    }
-  }
-
-  startTimer = () => {
-    const { isRunning, id } = this.state
-    if (isRunning) return
-
-    const intervalId = setInterval(() => {
-      this.setState((prevState) => {
-        if (prevState.time <= 0) {
-          clearInterval(intervalId)
-          return { time: 0, isRunning: false }
-        }
-
-        sessionStorage.setItem(`${id}`, prevState.time - 1)
-
-        return { time: prevState.time - 1 }
-      })
-    }, 1000)
-
-    this.setState({ isRunning: true, intervalId })
-    sessionStorage.setItem(`${id}-isRunning`, 'true')
-  }
-
-  pauseTimer = () => {
-    const { intervalId, id } = this.state
-    clearInterval(intervalId)
-    this.setState({ isRunning: false })
-    sessionStorage.setItem(`${id}-isRunning`, 'false')
   }
 
   onTaskEditing = (event) => {
@@ -97,9 +23,9 @@ export default class Task extends Component {
   render() {
     const { todo, deletedTask, onToggleDone, changeTask, onEditTask } = this.props
 
-    const { id, created, description, checked, done, edit } = todo
+    const { id, created, description, checked, done, edit, timeMin, timeSec } = todo
 
-    const { editValue, time, isRunning } = this.state
+    const { editValue } = this.state
 
     let classNames = ''
     if (done) {
@@ -124,21 +50,7 @@ export default class Task extends Component {
           <label htmlFor={id}>
             <span className="title">{description}</span>
             <span className="description">
-              <button
-                type="button"
-                className="icon icon-play"
-                aria-label="play timer"
-                onClick={this.startTimer}
-                disabled={isRunning}
-              />
-              <button
-                type="button"
-                className="icon icon-pause"
-                aria-label="pause timer"
-                onClick={this.pauseTimer}
-                disabled={!isRunning}
-              />
-              {this.formatTime(time)}
+              <Timer timeMin={timeMin} timeSec={timeSec} id={id} done={done} />
             </span>
             <span className="description">{`created ${formatDistanceToNowStrict(created, {
               includeSeconds: true,
