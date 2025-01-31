@@ -1,95 +1,111 @@
 import { Component } from 'react'
+import PropTypes from 'prop-types'
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`
+}
 
 export default class Timer extends Component {
   constructor(props) {
     super(props)
-    const { timeMin, timeSec, id } = props
+    const { timeMin, timeSec } = props
 
-    const totalTimeInSeconds = timeMin * 60 + timeSec
+    const savedTime = localStorage.getItem('timerTime')
+
+    const initialTime = savedTime ? parseInt(savedTime, 10) : timeMin * 60 + timeSec
 
     this.state = {
-      time: totalTimeInSeconds,
+      timeLeft: initialTime,
       isRunning: false,
     }
-
-    this.intervalId = null
-    this.timerKey = id
+    this.intervalRef = null
+    this.formatTime = formatTime.bind(this)
   }
 
-  componentDidMount() {
-    const savedTime = localStorage.getItem(this.timerKey)
-    const savedIsRunning = localStorage.getItem(`${this.timerKey}_isRunning`) === 'true'
+  componentDidUpdate(prevProps, prevState) {
+    const { isRunning, timeLeft } = this.state
 
-    if (savedTime) {
-      this.setState({ time: parseInt(savedTime, 10), isRunning: savedIsRunning })
-    }
+    const { done } = this.props
 
-    if (savedIsRunning) {
+    if (done && !prevProps.done) {
+      this.pauseTimer()
+    } else if (!done && prevProps.done) {
       this.startTimer()
     }
+
+    if (isRunning && !prevState.isRunning) {
+      this.startTimer()
+    } else if (!isRunning && prevState.isRunning) {
+      this.pauseTimer()
+    }
+
+    localStorage.setItem('timerTime', timeLeft)
   }
 
   componentWillUnmount() {
-    clearInterval(this.intervalId)
-    localStorage.removeItem(this.timerKey)
-    localStorage.removeItem(`${this.timerKey}_isRunning`)
+    clearInterval(this.intervalRef)
+
+    localStorage.removeItem('timerTime')
   }
 
   startTimer = () => {
-    const { isRunning } = this.state
-    if (isRunning) return
-
-    this.intervalId = setInterval(() => {
+    this.intervalRef = setInterval(() => {
       this.setState((prevState) => {
-        if (prevState.time > 0) {
-          const newTime = prevState.time - 1
-
-          localStorage.setItem(this.timerKey, newTime)
-          return { time: newTime }
+        if (prevState.timeLeft <= 0) {
+          clearInterval(this.intervalRef)
+          return { timeLeft: 0 }
         }
-
-        clearInterval(this.intervalId)
-        localStorage.removeItem(this.timerKey)
-        localStorage.setItem(`${this.timerKey}_isRunning`, 'false')
-        return { isRunning: false }
+        return { timeLeft: prevState.timeLeft - 1 }
       })
     }, 1000)
-
-    this.setState({ isRunning: true })
-    localStorage.setItem(`${this.timerKey}_isRunning`, 'true')
   }
 
   pauseTimer = () => {
-    clearInterval(this.intervalId)
+    clearInterval(this.intervalRef)
+  }
+
+  handlePlay = () => {
+    this.setState({ isRunning: true })
+  }
+
+  handlePause = () => {
     this.setState({ isRunning: false })
-    localStorage.setItem(`${this.timerKey}_isRunning`, 'false')
   }
 
   render() {
-    const { time, isRunning } = this.state
-    const min = Math.floor(time / 60)
-    const sec = time % 60
-
-    const displayTime = min > 0 ? `${min}:${sec < 10 ? '0' : ''}${sec}` : `${sec < 10 ? '0' : ''}${sec}`
-
+    const { timeLeft, isRunning } = this.state
     return (
       <>
         <button
           type="button"
           className="icon icon-play"
           aria-label="play timer"
-          onClick={this.startTimer}
-          disabled={isRunning}
+          onClick={this.handlePlay}
+          disabled={isRunning || timeLeft <= 0}
         />
         <button
           type="button"
           className="icon icon-pause"
           aria-label="pause timer"
-          onClick={this.pauseTimer}
-          disabled={!isRunning}
+          onClick={this.handlePause}
+          disabled={!isRunning || timeLeft <= 0}
         />
-        {displayTime}
+        {this.formatTime(timeLeft)}
       </>
     )
   }
+}
+
+Timer.defaultProps = {
+  timeMin: 0,
+  timeSec: 0,
+  done: false,
+}
+
+Timer.propTypes = {
+  done: PropTypes.bool,
+  timeMin: PropTypes.number,
+  timeSec: PropTypes.number,
 }
