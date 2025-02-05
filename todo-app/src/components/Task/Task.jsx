@@ -1,85 +1,63 @@
-import { Component } from 'react'
+import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { formatDistanceToNowStrict } from 'date-fns'
 
 import Timer from '../Timer/Timer'
 
-export default class Task extends Component {
-  constructor(props) {
-    super(props)
-    const { description } = props
+export default function Task(props) {
+  const { todo, deletedTask, onToggleDone, changeTask, onEditTask } = props
 
-    this.state = {
-      editValue: description,
-    }
-  }
+  const { id, created, description, timeMin, timeSec, edit, done, checked } = todo
 
-  onTaskEditing = (event) => {
-    this.setState({
-      editValue: event.target.value,
-    })
-  }
+  const [editValue, setEditValue] = useState(description)
 
-  render() {
-    const { todo, deletedTask, onToggleDone, changeTask, onEditTask } = this.props
-
-    const { id, created, description, checked, done, edit, timeMin, timeSec } = todo
-
-    const { editValue } = this.state
-
-    let classNames = ''
-    if (done) {
-      classNames = 'completed'
-    } else if (edit) {
-      classNames = 'editing'
-    }
-
-    return (
-      <li className={classNames}>
-        <div className="view">
-          <input
-            id={id}
-            className="toggle"
-            type="checkbox"
-            value={editValue}
-            checked={checked}
-            onChange={this.onTaskEditing}
-            onClick={(event) => onToggleDone(id, event)}
-            onKeyDown={(event) => onToggleDone(id, event)}
-          />
-          <label htmlFor={id}>
-            <span className="title">{description}</span>
-            <span className="description">
-              <Timer timeMin={timeMin} timeSec={timeSec} id={id} done={done} />
-            </span>
-            <span className="description">{`created ${formatDistanceToNowStrict(created, {
-              includeSeconds: true,
-              addSuffix: true,
-            })}`}</span>
-          </label>
-          <button
-            aria-label="Edit Task"
-            type="button"
-            className="icon icon-edit"
-            onClick={(event) => onEditTask(id, event)}
-          />
-          <button
-            aria-label="delete Task"
-            type="button"
-            className="icon icon-destroy"
-            onClick={(event) => deletedTask(id, event)}
-          />
-        </div>
+  return (
+    <li className={(done ? 'completed' : null, edit ? 'editing' : null)}>
+      <div className="view">
         <input
-          type="text"
-          className="edit"
+          id={id}
+          className="toggle"
+          type="checkbox"
           value={editValue}
-          onChange={this.onTaskEditing}
-          onKeyDown={(event) => changeTask(id, event)}
+          checked={checked}
+          onChange={(event) => setEditValue(event.target.value)}
+          onClick={(event) => onToggleDone(id, event)}
         />
-      </li>
-    )
-  }
+        <label htmlFor={id}>
+          <span className="title">{description}</span>
+          <span className="description">
+            <Timer timeMin={timeMin} timeSec={timeSec} id={id} done={done} />
+          </span>
+          <span className="description">{`created ${formatDistanceToNowStrict(created, {
+            includeSeconds: true,
+            addSuffix: true,
+          })}`}</span>
+        </label>
+        <button
+          aria-label="Edit Task"
+          type="button"
+          className="icon icon-edit"
+          onClick={(event) => onEditTask(id, event)}
+        />
+        <button
+          aria-label="delete Task"
+          type="button"
+          className="icon icon-destroy"
+          onClick={(event) => deletedTask(id, event)}
+        />
+      </div>
+      <input
+        type="text"
+        className="edit"
+        value={editValue}
+        onChange={(event) => setEditValue(event.target.value)}
+        onKeyDown={(event) => {
+          changeTask(id, event)
+          setEditValue(description)
+        }}
+      />
+    </li>
+  )
 }
 
 Task.defaultProps = {
