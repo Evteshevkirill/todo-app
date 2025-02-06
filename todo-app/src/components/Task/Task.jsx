@@ -24,7 +24,7 @@ export default function Task(props) {
           id={id}
           className="toggle"
           type="checkbox"
-          value={editValue}
+          value={description}
           checked={checked}
           onChange={(e) => setEditValue(e.target.value)}
           onClick={(event) => onToggleDone(id, event)}
@@ -33,7 +33,7 @@ export default function Task(props) {
         <label htmlFor={id}>
           <span className="title">{description}</span>
           <span className="description">
-            <Timer timeMin={timeMin} timeSec={timeSec} done={done} />
+            <Timer timeMin={timeMin} timeSec={timeSec} done={done} id={id} />
           </span>
           <span className="description">{`created ${formatDistanceToNowStrict(created, {
             includeSeconds: true,

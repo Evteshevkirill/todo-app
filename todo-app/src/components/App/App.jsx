@@ -21,14 +21,6 @@ export default function App() {
       checked: false,
     }
   }
-
-  const onToggleData = (id, propName, ...rest) => {
-    const newData = todosData.map((todo) =>
-      todo.id === id ? { ...todo, [propName]: !todo[propName], [rest]: ![rest] } : todo
-    )
-    setTodosData(newData)
-  }
-
   const filterTasks = (items) => {
     return items.filter((item) => {
       if (filter === 'Active') {
@@ -48,13 +40,25 @@ export default function App() {
       return
     }
 
-    onToggleData(id, 'done', 'checked')
+    const newTodoData = todosData.map((item) => {
+      if (item.id === id) {
+        return { ...item, done: !item.done, checked: !item.checked }
+      }
+      return item
+    })
+    setTodosData(newTodoData)
   }
 
   const onEditTask = (id, event) => {
     event.stopPropagation()
 
-    onToggleData(id, 'edit')
+    const newTodoData = todosData.map((item) => {
+      if (item.id === id) {
+        return { ...item, edit: !item.edit }
+      }
+      return item
+    })
+    setTodosData(newTodoData)
   }
 
   const onFilterChange = (newFilter) => {
@@ -71,24 +75,30 @@ export default function App() {
       onEditTask(id, event)
     }
     if (event.key === 'Enter') {
-      const newTodoData = todosData.map((todo) =>
-        todo.id === id ? { ...todo, description: event.target.value } : todo
-      )
-
-      setTodosData(newTodoData)
+      const newData = todosData.map((el) => {
+        if (el.id === id) {
+          return {
+            ...el,
+            description: event.target.value,
+            edit: false,
+          }
+        }
+        return el
+      })
+      setTodosData(newData)
     }
-    onEditTask(id, event)
   }
 
   const newTask = (value, min, sec) => {
-    const newItem = createToDoTask(value, min, sec)
-
-    setTodosData([newItem, ...todosData])
+    const newCreateTask = createToDoTask(value, min, sec)
+    setTodosData([newCreateTask, ...todosData])
   }
 
   const deletedTask = (id, event) => {
     event.stopPropagation()
-    setTodosData(todosData.filter((el) => el.id !== id))
+
+    const newData = todosData.filter((task) => id !== task.id)
+    setTodosData(newData)
   }
 
   const doneCount = todosData.filter((el) => el.done).length
@@ -99,7 +109,7 @@ export default function App() {
       <NewTaskForm newTask={newTask} />
       <section className="main">
         <TaskList
-          todos={filterTasks(todosData, filter)}
+          todos={filterTasks(todosData)}
           deletedTask={deletedTask}
           onToggleDone={onToggleDone}
           onEditTask={onEditTask}
