@@ -6,13 +6,19 @@ import Timer from '../Timer/Timer'
 
 export default function Task(props) {
   const { todo, deletedTask, onToggleDone, changeTask, onEditTask } = props
-
-  const { id, created, description, timeMin, timeSec, edit, done, checked } = todo
+  const { id, created, description, checked, done, edit, timeMin, timeSec } = todo
 
   const [editValue, setEditValue] = useState(description)
 
+  let classNames = ''
+  if (done) {
+    classNames = 'completed'
+  } else if (edit) {
+    classNames = 'editing'
+  }
+
   return (
-    <li className={(done ? 'completed' : null, edit ? 'editing' : null)}>
+    <li className={classNames}>
       <div className="view">
         <input
           id={id}
@@ -20,13 +26,14 @@ export default function Task(props) {
           type="checkbox"
           value={editValue}
           checked={checked}
-          onChange={(event) => setEditValue(event.target.value)}
+          onChange={(e) => setEditValue(e.target.value)}
           onClick={(event) => onToggleDone(id, event)}
+          onKeyDown={(event) => onToggleDone(id, event)}
         />
         <label htmlFor={id}>
           <span className="title">{description}</span>
           <span className="description">
-            <Timer timeMin={timeMin} timeSec={timeSec} id={id} done={done} />
+            <Timer timeMin={timeMin} timeSec={timeSec} done={done} />
           </span>
           <span className="description">{`created ${formatDistanceToNowStrict(created, {
             includeSeconds: true,
@@ -50,11 +57,8 @@ export default function Task(props) {
         type="text"
         className="edit"
         value={editValue}
-        onChange={(event) => setEditValue(event.target.value)}
-        onKeyDown={(event) => {
-          changeTask(id, event)
-          setEditValue(description)
-        }}
+        onChange={(e) => setEditValue(e.target.value)}
+        onKeyDown={(event) => changeTask(id, event)}
       />
     </li>
   )

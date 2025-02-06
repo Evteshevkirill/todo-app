@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 
 function formatTime(seconds) {
@@ -7,95 +7,75 @@ function formatTime(seconds) {
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`
 }
 
-export default class Timer extends Component {
-  constructor(props) {
-    super(props)
-    const { timeMin, timeSec } = props
+export default function Timer(props) {
+  const { timeMin, timeSec, done } = props
 
-    const savedTime = localStorage.getItem('timerTime')
+  const savedTime = localStorage.getItem('timerTime')
 
-    const initialTime = savedTime ? parseInt(savedTime, 10) : timeMin * 60 + timeSec
+  const initialTime = savedTime ? parseInt(savedTime, 10) : timeMin * 60 + timeSec
 
-    this.state = {
-      timeLeft: initialTime,
-      isRunning: false,
-    }
-    this.intervalRef = null
-    this.formatTime = formatTime.bind(this)
-  }
+  const [timeLeft, setTimeLeft] = useState(initialTime)
+  const [isRunning, setIsRunning] = useState(false)
 
-  componentDidUpdate(prevProps, prevState) {
-    const { isRunning, timeLeft } = this.state
+  let intervalRef = useRef()
 
-    const { done } = this.props
-
-    if (done && !prevProps.done) {
-      this.pauseTimer()
-    } else if (!done && prevProps.done) {
-      this.startTimer()
-    }
-
-    if (isRunning && !prevState.isRunning) {
-      this.startTimer()
-    } else if (!isRunning && prevState.isRunning) {
-      this.pauseTimer()
-    }
-
-    localStorage.setItem('timerTime', timeLeft)
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.intervalRef)
-
-    localStorage.removeItem('timerTime')
-  }
-
-  startTimer = () => {
-    this.intervalRef = setInterval(() => {
-      this.setState((prevState) => {
+  const startTimer = () => {
+    setIsRunning(true)
+    intervalRef = setInterval(() => {
+      setTimeLeft((prevState) => {
         if (prevState.timeLeft <= 0) {
-          clearInterval(this.intervalRef)
+          clearInterval(intervalRef)
           return { timeLeft: 0 }
         }
+        localStorage.setItem('timerTime', prevState.timeLeft - 1)
         return { timeLeft: prevState.timeLeft - 1 }
       })
     }, 1000)
   }
 
-  pauseTimer = () => {
-    clearInterval(this.intervalRef)
+  const pauseTimer = () => {
+    setIsRunning(false)
+    clearInterval(intervalRef)
   }
 
-  handlePlay = () => {
-    this.setState({ isRunning: true })
-  }
+  useEffect(() => {
+    if (done) {
+      pauseTimer()
+      localStorage.setItem('timerTime', timeLeft)
+    }
 
-  handlePause = () => {
-    this.setState({ isRunning: false })
-  }
+    if (isRunning) {
+      startTimer()
+    }
 
-  render() {
-    const { timeLeft, isRunning } = this.state
-    return (
-      <>
-        <button
-          type="button"
-          className="icon icon-play"
-          aria-label="play timer"
-          onClick={this.handlePlay}
-          disabled={isRunning || timeLeft <= 0}
-        />
-        <button
-          type="button"
-          className="icon icon-pause"
-          aria-label="pause timer"
-          onClick={this.handlePause}
-          disabled={!isRunning || timeLeft <= 0}
-        />
-        {this.formatTime(timeLeft)}
-      </>
-    )
-  }
+    return () => {
+      clearInterval(intervalRef)
+    }
+  }, [done, timeLeft, isRunning])
+
+  useEffect(() => {
+    localStorage.clear()
+  }, [])
+
+  return (
+    <>
+      <button
+        type="button"
+        className="icon icon-play"
+        aria-label="play timer"
+        onClick={startTimer}
+        disabled={isRunning || timeLeft <= 0}
+      />
+      <button
+        type="button"
+        className="icon icon-pause"
+        aria-label="pause timer"
+        onClick={pauseTimer}
+        disabled={!isRunning || timeLeft <= 0}
+      />
+      {formatTime(timeLeft)}
+    </>
+  )
 }
 
 Timer.defaultProps = {

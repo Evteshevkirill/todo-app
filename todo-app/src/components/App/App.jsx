@@ -24,7 +24,7 @@ export default function App() {
 
   const onToggleData = (id, propName, ...rest) => {
     const newData = todosData.map((todo) =>
-      todo.id === id ? { ...todo, [propName]: ![propName], [rest]: ![rest] } : todo
+      todo.id === id ? { ...todo, [propName]: !todo[propName], [rest]: ![rest] } : todo
     )
     setTodosData(newData)
   }
