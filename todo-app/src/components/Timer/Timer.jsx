@@ -20,43 +20,34 @@ export default class Timer extends Component {
       timeLeft: initialTime,
       isRunning: false,
     }
+
     this.intervalRef = null
     this.formatTime = formatTime.bind(this)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { isRunning, timeLeft } = this.state
-
+  componentDidUpdate(prevProps) {
     const { done } = this.props
 
-    if (done && !prevProps.done) {
-      this.pauseTimer()
-    } else if (!done && prevProps.done) {
-      this.startTimer()
-    }
-
-    if (isRunning && !prevState.isRunning) {
-      this.startTimer()
-    } else if (!isRunning && prevState.isRunning) {
+    if (done !== prevProps.done) {
       this.pauseTimer()
     }
-
-    localStorage.setItem('timerTime', timeLeft)
   }
 
   componentWillUnmount() {
     clearInterval(this.intervalRef)
-
     localStorage.removeItem('timerTime')
   }
 
   startTimer = () => {
+    this.setState({ isRunning: true })
+
     this.intervalRef = setInterval(() => {
       this.setState((prevState) => {
         if (prevState.timeLeft <= 0) {
           clearInterval(this.intervalRef)
           return { timeLeft: 0 }
         }
+        localStorage.setItem('timerTime', prevState.timeLeft - 1)
         return { timeLeft: prevState.timeLeft - 1 }
       })
     }, 1000)
@@ -64,33 +55,28 @@ export default class Timer extends Component {
 
   pauseTimer = () => {
     clearInterval(this.intervalRef)
-  }
 
-  handlePlay = () => {
-    this.setState({ isRunning: true })
-  }
-
-  handlePause = () => {
     this.setState({ isRunning: false })
   }
 
   render() {
     const { timeLeft, isRunning } = this.state
+    const { done } = this.props
     return (
       <>
         <button
           type="button"
           className="icon icon-play"
           aria-label="play timer"
-          onClick={this.handlePlay}
-          disabled={isRunning || timeLeft <= 0}
+          onClick={this.startTimer}
+          disabled={isRunning || done || timeLeft === 0}
         />
         <button
           type="button"
           className="icon icon-pause"
           aria-label="pause timer"
-          onClick={this.handlePause}
-          disabled={!isRunning || timeLeft <= 0}
+          onClick={this.pauseTimer}
+          disabled={!isRunning || timeLeft === 0}
         />
         {this.formatTime(timeLeft)}
       </>

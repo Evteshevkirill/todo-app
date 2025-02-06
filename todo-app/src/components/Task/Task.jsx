@@ -50,7 +50,7 @@ export default class Task extends Component {
           <label htmlFor={id}>
             <span className="title">{description}</span>
             <span className="description">
-              <Timer timeMin={timeMin} timeSec={timeSec} id={id} done={done} />
+              <Timer timeMin={timeMin} timeSec={timeSec} done={done} />
             </span>
             <span className="description">{`created ${formatDistanceToNowStrict(created, {
               includeSeconds: true,
