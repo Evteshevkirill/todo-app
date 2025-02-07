@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 
 import NewTaskForm from '../NewTaskForm/NewTaskForm'
 import TaskList from '../TaskList/TaskList'
@@ -21,17 +21,20 @@ export default function App() {
       checked: false,
     }
   }
-  const filterTasks = (items) => {
-    return items.filter((item) => {
-      if (filter === 'Active') {
-        return !item.done
-      }
-      if (filter === 'Completed') {
-        return item.done
-      }
-      return items
-    })
-  }
+  const filterTasks = useCallback(
+    (items) => {
+      return items.filter((item) => {
+        if (filter === 'Active') {
+          return !item.done
+        }
+        if (filter === 'Completed') {
+          return item.done
+        }
+        return items
+      })
+    },
+    [filter]
+  )
 
   const onToggleDone = (id, event) => {
     const el = event.target.closest('.edit')
@@ -71,7 +74,7 @@ export default function App() {
   }
 
   const changeTask = (id, event) => {
-    if (event.keyCode === 27) {
+    if (event.key === 'Escape') {
       onEditTask(id, event)
     }
     if (event.key === 'Enter') {
@@ -109,7 +112,7 @@ export default function App() {
       <NewTaskForm newTask={newTask} />
       <section className="main">
         <TaskList
-          todos={filterTasks(todosData)}
+          todos={useMemo(() => filterTasks(todosData), [todosData, filterTasks])}
           deletedTask={deletedTask}
           onToggleDone={onToggleDone}
           onEditTask={onEditTask}
