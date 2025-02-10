@@ -60,6 +60,10 @@ export default function Timer(props) {
     }
   }, [done])
 
+  useEffect(() => {
+    localStorage.clear()
+  }, [])
+
   return (
     <>
       <button

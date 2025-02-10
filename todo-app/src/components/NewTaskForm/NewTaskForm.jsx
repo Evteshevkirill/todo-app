@@ -41,6 +41,7 @@ export default function NewTaskForm({ newTask }) {
     event.preventDefault()
 
     if (value === '' || sec === '' || min === '') return
+    if (value.match(/^\s*$/)) return
     if (Number.isNaN(+sec) || Number.isNaN(+min)) return
 
     newTask(value, min, sec)

@@ -74,7 +74,7 @@ export default function App() {
   }
 
   const changeTask = (id, event) => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' || event.target.value.length === 0) {
       onEditTask(id, event)
     }
     if (event.key === 'Enter') {
