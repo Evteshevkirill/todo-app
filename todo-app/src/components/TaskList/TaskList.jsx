@@ -5,7 +5,7 @@ import Task from '../Task/Task'
 export default function TaskList(props) {
   const { todos, deletedTask, onToggleDone, onEditTask, changeTask } = props
   const elements = todos.map((todo) => {
-    const { id, description } = todo
+    const { id } = todo
     return (
       <Task
         key={id}
@@ -14,7 +14,6 @@ export default function TaskList(props) {
         onToggleDone={onToggleDone}
         onEditTask={onEditTask}
         changeTask={changeTask}
-        description={description}
       />
     )
   })

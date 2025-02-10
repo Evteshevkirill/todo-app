@@ -1,47 +1,15 @@
-import { Component } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 
 import NewTaskForm from '../NewTaskForm/NewTaskForm'
 import TaskList from '../TaskList/TaskList'
 import Footer from '../Footer/Footer'
 import './App.css'
 
-function onToggleData(id, arr, propName, ...rest) {
-  const idx = arr.findIndex((el) => el.id === id)
-  const oldItem = arr[idx]
-  const newItem = {
-    ...oldItem,
-    [propName]: !oldItem[propName],
-    [rest]: !oldItem[rest],
-  }
-  const newTodoData = arr.toSpliced(idx, 1, newItem)
-  return newTodoData
-}
+export default function App() {
+  const [todosData, setTodosData] = useState([])
+  const [filter, setFilter] = useState('All')
 
-function filterTasks(items, filter) {
-  return items.filter((item) => {
-    if (filter === 'Active') {
-      return !item.done
-    }
-    if (filter === 'Completed') {
-      return item.done
-    }
-    return items
-  })
-}
-
-export default class App extends Component {
-  constructor() {
-    super()
-    this.state = {
-      todosData: [],
-      filter: 'All',
-    }
-    this.onToggleData = onToggleData.bind(this)
-    this.filterTasks = filterTasks.bind(this)
-  }
-
-  createToDoTask = (value, min, sec) => {
-    const { todosData } = this.state
+  const createToDoTask = (value, min, sec) => {
     return {
       id: todosData.length + 1,
       description: value,
@@ -53,108 +21,110 @@ export default class App extends Component {
       checked: false,
     }
   }
+  const filterTasks = useCallback(
+    (items) => {
+      return items.filter((item) => {
+        if (filter === 'Active') {
+          return !item.done
+        }
+        if (filter === 'Completed') {
+          return item.done
+        }
+        return items
+      })
+    },
+    [filter]
+  )
 
-  onToggleDone = (id, event) => {
+  const onToggleDone = (id, event) => {
     const el = event.target.closest('.edit')
     if (el) {
       event.stopPropagation()
       return
     }
 
-    this.setState(({ todosData }) => {
-      return {
-        todosData: this.onToggleData(id, todosData, 'done', 'checked'),
+    const newTodoData = todosData.map((item) => {
+      if (item.id === id) {
+        return { ...item, done: !item.done, checked: !item.checked }
       }
+      return item
     })
+    setTodosData(newTodoData)
   }
 
-  onEditTask = (id, event) => {
+  const onEditTask = (id, event) => {
     event.stopPropagation()
-    this.setState(({ todosData }) => {
-      return {
-        todosData: this.onToggleData(id, todosData, 'edit'),
+
+    const newTodoData = todosData.map((item) => {
+      if (item.id === id) {
+        return { ...item, edit: !item.edit }
       }
+      return item
     })
+    setTodosData(newTodoData)
   }
 
-  onFilterChange = (filter) => {
-    this.setState({ filter })
+  const onFilterChange = (newFilter) => {
+    setFilter(newFilter)
   }
 
-  clearCompletedTasks = () => {
-    this.setState(({ todosData }) => {
-      const newData = todosData.filter((el) => !el.done)
-      return {
-        todosData: newData,
-      }
-    })
+  const clearCompletedTasks = () => {
+    const newData = todosData.filter((el) => !el.done)
+    setTodosData(newData)
   }
 
-  changeTask = (id, event) => {
-    if (event.keyCode === 27) {
-      this.onEditTask(id, event)
+  const changeTask = (id, event) => {
+    if (event.key === 'Escape' || event.target.value.length === 0) {
+      onEditTask(id, event)
     }
     if (event.key === 'Enter') {
-      this.setState(({ todosData }) => {
-        const idx = todosData.findIndex((el) => el.id === id)
-        const oldItem = todosData[idx]
-        const newItem = { ...oldItem, description: event.target.value }
-        const newTodoData = todosData.toSpliced(idx, 1, newItem)
-
-        return {
-          todosData: newTodoData,
+      const newData = todosData.map((el) => {
+        if (el.id === id) {
+          return {
+            ...el,
+            description: event.target.value,
+            edit: false,
+          }
         }
+        return el
       })
-      this.onEditTask(id, event)
+      setTodosData(newData)
     }
   }
 
-  newTask = (value, min, sec) => {
-    this.setState(({ todosData }) => {
-      const newTodoData = [...todosData]
-      const newTask = this.createToDoTask(value, min, sec)
-      newTodoData.unshift(newTask)
-      return {
-        todosData: newTodoData,
-      }
-    })
+  const newTask = (value, min, sec) => {
+    const newCreateTask = createToDoTask(value, min, sec)
+    setTodosData([newCreateTask, ...todosData])
   }
 
-  deletedTask = (id, event) => {
+  const deletedTask = (id, event) => {
     event.stopPropagation()
-    this.setState(({ todosData }) => {
-      const idx = todosData.findIndex((task) => id === task.id)
-      const newTodoData = todosData.toSpliced(idx, 1)
-      return {
-        todosData: newTodoData,
-      }
-    })
+
+    const newData = todosData.filter((task) => id !== task.id)
+    setTodosData(newData)
   }
 
-  render() {
-    const { todosData, filter } = this.state
+  const doneCount = todosData.filter((el) => el.done).length
+  const todoCount = todosData.length - doneCount
 
-    const doneCount = todosData.filter((el) => el.done).length
-    const todoCount = todosData.length - doneCount
-    return (
-      <section className="todoapp">
-        <NewTaskForm newTask={this.newTask} />
-        <section className="main">
-          <TaskList
-            todos={this.filterTasks(todosData, filter)}
-            deletedTask={this.deletedTask}
-            onToggleDone={this.onToggleDone}
-            onEditTask={this.onEditTask}
-            changeTask={this.changeTask}
-          />
-          <Footer
-            todoCount={todoCount}
-            filter={filter}
-            onFilterChange={this.onFilterChange}
-            ClearCompletedTasks={this.clearCompletedTasks}
-          />
-        </section>
+  return (
+    <section className="todoapp">
+      <NewTaskForm newTask={newTask} />
+      <section className="main">
+        <TaskList
+          todos={useMemo(() => filterTasks(todosData), [todosData, filterTasks])}
+          deletedTask={deletedTask}
+          onToggleDone={onToggleDone}
+          onEditTask={onEditTask}
+          changeTask={changeTask}
+        />
+        <Footer
+          todoCount={todoCount}
+          filter={filter}
+          onFilterChange={onFilterChange}
+          ClearCompletedTasks={clearCompletedTasks}
+        />
       </section>
-    )
-  }
+    </section>
+  )
 }
