@@ -1,8 +1,15 @@
-import PropTypes from 'prop-types'
+import React from 'react'
 
 import TaskFilter from '../TaskFilter/TaskFilter'
 
-export default function Footer(props) {
+interface FooterProps {
+  todoCount: number
+  filter: string
+  onFilterChange: (name: string) => void
+  ClearCompletedTasks: () => void
+}
+
+const Footer: React.FC<FooterProps> = (props) => {
   const { todoCount, filter, onFilterChange, ClearCompletedTasks } = props
   return (
     <footer className="footer">
@@ -16,12 +23,4 @@ export default function Footer(props) {
     </footer>
   )
 }
-
-Footer.defaultProps = {
-  todoCount: 0,
-}
-
-Footer.propTypes = {
-  todoCount: PropTypes.number,
-  ClearCompletedTasks: PropTypes.func.isRequired,
-}
+export default Footer

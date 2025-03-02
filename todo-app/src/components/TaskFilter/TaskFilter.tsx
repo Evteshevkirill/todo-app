@@ -1,8 +1,12 @@
-import { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 
-export default class TaskFilter extends Component {
-  buttons = [
+interface TaskFilterProps {
+  filter: string
+  onFilterChange: (name: string) => void
+}
+
+export default class TaskFilter extends React.Component<TaskFilterProps> {
+  buttons: { name: string; label: string }[] = [
     { name: 'All', label: 'All' },
     { name: 'Active', label: 'Active' },
     { name: 'Completed', label: 'Completed' },
@@ -15,7 +19,7 @@ export default class TaskFilter extends Component {
       const className = isActive ? 'selected' : null
       return (
         <li key={name}>
-          <button type="button" className={className} onClick={() => onFilterChange(name)}>
+          <button type="button" className={className ?? ''} onClick={() => onFilterChange(name)}>
             {label}
           </button>
         </li>
@@ -23,13 +27,4 @@ export default class TaskFilter extends Component {
     })
     return buttons
   }
-}
-
-TaskFilter.defaultProps = {
-  filter: 'All',
-}
-
-TaskFilter.propTypes = {
-  filter: PropTypes.string,
-  onFilterChange: PropTypes.func.isRequired,
 }

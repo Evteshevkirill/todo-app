@@ -1,23 +1,29 @@
-import { useRef, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React, { useRef, useState, useEffect } from 'react'
 
-function formatTime(seconds) {
+function formatTime(seconds: number) {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`
 }
 
-export default function Timer(props) {
+interface TimerProps {
+  timeMin: number
+  timeSec: number
+  done: boolean
+  id: number
+}
+
+const Timer: React.FC<TimerProps> = (props) => {
   const { timeMin, timeSec, done, id } = props
 
   const initialTime = timeMin * 60 + timeSec
 
-  const [timeLeft, setTimeLeft] = useState(() => {
+  const [timeLeft, setTimeLeft] = useState<number>(() => {
     return Number(localStorage.getItem(`timerTime${id}`)) || initialTime
   })
-  const [isRunning, setIsRunning] = useState(false)
+  const [isRunning, setIsRunning] = useState<boolean>(false)
 
-  const intervalRef = useRef(null)
+  const intervalRef = useRef<number | null>(null)
 
   const pauseTimer = () => {
     if (intervalRef.current) {
@@ -33,12 +39,14 @@ export default function Timer(props) {
     intervalRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(intervalRef.current)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
           intervalRef.current = null
           setIsRunning(false)
           return 0
         }
-        localStorage.setItem(`timerTime${id}`, prev - 1)
+        localStorage.setItem(`timerTime${id}`, `${prev - 1}`)
         return prev - 1
       })
     }, 1000)
@@ -85,14 +93,4 @@ export default function Timer(props) {
   )
 }
 
-Timer.defaultProps = {
-  timeMin: 0,
-  timeSec: 0,
-  done: false,
-}
-
-Timer.propTypes = {
-  done: PropTypes.bool,
-  timeMin: PropTypes.number,
-  timeSec: PropTypes.number,
-}
+export default Timer

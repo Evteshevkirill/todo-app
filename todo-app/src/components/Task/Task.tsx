@@ -1,14 +1,23 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, JSX } from 'react'
 import { formatDistanceToNowStrict } from 'date-fns'
 
 import Timer from '../Timer/Timer'
+import { Todo } from '../types/types'
 
-export default function Task(props) {
+interface TaskProps {
+  todo: Todo
+  deletedTask: (id: number, event: React.MouseEvent<HTMLButtonElement>) => void
+  onToggleDone: (id: number, event: React.SyntheticEvent) => void
+  changeTask: (id: number, event: React.KeyboardEvent<HTMLInputElement>) => void
+  onEditTask: (id: number, event: React.MouseEvent<HTMLButtonElement>) => void
+}
+
+const Task: React.FC<TaskProps> = (props): JSX.Element => {
   const { todo, deletedTask, onToggleDone, changeTask, onEditTask } = props
+
   const { id, created, description, checked, done, edit, timeMin, timeSec } = todo
 
-  const [editValue, setEditValue] = useState(description)
+  const [editValue, setEditValue] = useState<string>(description)
 
   let classNames = ''
   if (done) {
@@ -21,7 +30,7 @@ export default function Task(props) {
     <li className={classNames}>
       <div className="view">
         <input
-          id={id}
+          id={`${id}`}
           className="toggle"
           type="checkbox"
           value={description}
@@ -30,13 +39,13 @@ export default function Task(props) {
           onClick={(event) => onToggleDone(id, event)}
           onKeyDown={(event) => onToggleDone(id, event)}
         />
-        <label htmlFor={id}>
+        <label htmlFor={`${id}`}>
           <span className="title">{description}</span>
           <span className="description">
             <Timer timeMin={timeMin} timeSec={timeSec} done={done} id={id} />
           </span>
           <span className="description">{`created ${formatDistanceToNowStrict(created, {
-            includeSeconds: true,
+            unit: 'second',
             addSuffix: true,
           })}`}</span>
         </label>
@@ -64,23 +73,4 @@ export default function Task(props) {
   )
 }
 
-Task.defaultProps = {
-  todo: {},
-}
-
-Task.propTypes = {
-  todo: PropTypes.shape({
-    id: PropTypes.number,
-    description: PropTypes.string,
-    min: PropTypes.string,
-    sec: PropTypes.string,
-    checked: PropTypes.bool,
-    done: PropTypes.bool,
-    edit: PropTypes.bool,
-    created: PropTypes.instanceOf(Date),
-  }),
-  onToggleDone: PropTypes.func.isRequired,
-  onEditTask: PropTypes.func.isRequired,
-  changeTask: PropTypes.func.isRequired,
-  deletedTask: PropTypes.func.isRequired,
-}
+export default Task

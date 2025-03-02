@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "es6",
+    "strict": true,
+    "outDir": "./",
+    "allowJs": true,
+    "lib": ["es2016", "dom"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "typeRoots": ["./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"],
+      "@types/*": ["../types/*"]
+    },
+    "plugins": [
+      {
+        "name": "@typescript-eslint"
+      }
+    ]
+  },
+  "include": ["./**/*", ".d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

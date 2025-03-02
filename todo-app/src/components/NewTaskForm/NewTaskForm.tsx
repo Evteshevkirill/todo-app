@@ -1,8 +1,13 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react'
 
-export default function NewTaskForm({ newTask }) {
-  const [state, setState] = useState({
+interface NewTaskFormProps {
+  newTask: (value: string, min: string, sec: string) => void
+}
+
+type stateForm = { value: string; min: string; sec: string }
+
+const NewTaskForm: React.FC<NewTaskFormProps> = ({ newTask }) => {
+  const [state, setState] = useState<stateForm>({
     value: '',
     min: '',
     sec: '',
@@ -10,7 +15,7 @@ export default function NewTaskForm({ newTask }) {
 
   const { value, min, sec } = state
 
-  const onTaskMin = (event) => {
+  const onTaskMin = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => {
       return {
         ...prev,
@@ -19,7 +24,7 @@ export default function NewTaskForm({ newTask }) {
     })
   }
 
-  const onTaskSec = (event) => {
+  const onTaskSec = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => {
       return {
         ...prev,
@@ -28,7 +33,7 @@ export default function NewTaskForm({ newTask }) {
     })
   }
 
-  const onTaskValue = (event) => {
+  const onTaskValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => {
       return {
         ...prev,
@@ -37,7 +42,7 @@ export default function NewTaskForm({ newTask }) {
     })
   }
 
-  const onSubmit = (event) => {
+  const onSubmit = (event: React.FormEvent) => {
     event.preventDefault()
 
     if (value === '' || sec === '' || min === '') return
@@ -66,6 +71,4 @@ export default function NewTaskForm({ newTask }) {
   )
 }
 
-NewTaskForm.propTypes = {
-  newTask: PropTypes.func.isRequired,
-}
+export default NewTaskForm
